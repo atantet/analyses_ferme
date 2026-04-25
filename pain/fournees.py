@@ -10,7 +10,7 @@ pd.set_option('future.no_silent_downcasting', True)
 
 
 CHEMIN_CONFIG = Path("config.toml")
-COLONNES_PRODUITS = ["Produit", "Variante", "Quantité"]
+COLONNES_PRODUITS = ["Produit", "Variante", "Pain produit"]
 
 def main():
     config = load_config()
@@ -64,25 +64,43 @@ def main():
         for ingredient in config["destination"]["ingredients"]:
             lignes, cols = zip(*config["source"][ingredient])
             df_quantite.loc[sem, ingredient] = (
-                df_ingredients_vendredi.to_numpy()[lignes, cols].sum() +
-                df_ingredients_mardi.to_numpy()[lignes, cols].sum())
+                (df_ingredients_vendredi.to_numpy()[lignes, cols] +
+                 df_ingredients_mardi.to_numpy()[lignes, cols])
+            ).sum()
 
         # Produit
-        s_produits_vendredi, s_poids_vendredi = (
+        df_produits_vendredi, df_poids_vendredi = (
             preparation_produits(df_vendredi, config))
-        s_produits_mardi, s_poids_mardi = (
+        df_produits_mardi, df_poids_mardi = (
             preparation_produits(df_mardi, config))
+        df_produits = df_produits_vendredi + df_produits_mardi
+        df_poids = df_poids_vendredi + df_poids_mardi
 
-        df_quantite.loc[sem, "CA"] = (
-            (s_produits_mardi * s_prix).sum() + 
-            (s_produits_vendredi * s_prix).sum())
-        df_quantite.loc[sem, "Poids"] = (
-            s_poids_mardi.sum() +  s_poids_vendredi.sum())
+        df_quantite.loc[sem, ["Pain produit", "Pain vendu"]] = (
+            df_poids.sum("index"))
+        df_quantite.loc[sem, ["CA théorique", "CA réalisé"]] = (
+            df_produits.mul(s_prix, axis="index").sum("index").to_numpy())
 
-    df_quantite["Prix moyen"] = df_quantite["CA"] / df_quantite["Poids"]
+    # Pour ne pas traiter le sarrasin séparément, on le garde en farine
+    quantite_farine_de_ble = (df_quantite["Farine T80"] +
+                              df_quantite["Farine T65"] + 
+                              df_quantite["Farine sarrasin"])
+    df_quantite["Taux de perte de pain"] = (
+        1 - df_quantite["Pain vendu"] / df_quantite["Pain produit"])
+    df_quantite["Taux de perte de CA"] = (
+        1 - df_quantite["CA réalisé"] / df_quantite["CA théorique"])
+    df_quantite["Prix moyen"] = (df_quantite["CA réalisé"] /
+                                 df_quantite["Pain vendu"])
     df_quantite["Besoin en blé"] = (
-        (df_quantite["Farine T80"] + df_quantite["Farine T65"]) /
+        quantite_farine_de_ble / 
         config["transformation"]["kg farine / kg blé"])
+    df_quantite["kg pain / kg farine"] = (
+        df_quantite["Pain produit"] / quantite_farine_de_ble)
+    df_quantite["kg farine / kg blé"] = config["transformation"][
+        "kg farine / kg blé"]
+    df_quantite["kg blé / kg pain"] = 1 / (
+        df_quantite["kg pain / kg farine"] * 
+        df_quantite["kg farine / kg blé"])
 
     chem_rac = Path(config["destination"]["chemin"])
     chemin = chem_rac.with_stem(
@@ -91,7 +109,8 @@ def main():
     df_quantite.to_csv(chemin)
 
     s_quantite_totale = df_quantite.sum("index")
-    s_quantite_totale.loc["Prix moyen"] /= len(df_quantite)
+    s_quantite_totale.loc[
+        config["destination"]["quantites_moyennes"]] /= len(df_quantite)
     df_quantite_totale = s_quantite_totale.to_frame("Quantité totale")
 
     chemin_total = chemin.with_stem(chemin.stem + "_totale")
@@ -160,34 +179,40 @@ def preparation_produits(df, config):
             config["source"]["Indices produits fin"][1]
         ].dropna(axis="index", how="all")
         df_produits = df_produits_large.iloc[
-            :, config["source"]["Colonnes produits"]]
+            :, config["source"]["Colonnes produits"]].copy()
         df_produits.columns = COLONNES_PRODUITS
 
         # Suppression des pains gratuits
         cols_gratuit = [c for c in config["source"]["gratuit_pour"]
                         if c in df_produits_large.columns]
         df_selection = df_produits_large[cols_gratuit]
-        df_produits.loc[:, "Quantité"] -= df_selection.sum("columns")
-        
+        df_produits.loc[:, "Pain vendu"] = (
+            df_produits.loc[:, "Pain produit"] *
+            (1 - config["destination"]["taux_de_perte"]) -
+            df_selection.sum("columns")
+        )
+
+        # Remplissage des na
         df_produits.loc[:, "Variante"] = df_produits["Variante"].fillna(
             "Ordinaire")
-        s_produits = df_produits.ffill(axis="index").set_index(
-            ["Produit", "Variante"]).squeeze()
-        s_produits = s_produits.sort_index().drop(
-            ["Galettes amap", "Galettes plus"])
+        df_produits = df_produits.ffill(axis="index").set_index(
+            ["Produit", "Variante"]).sort_index().groupby(
+                level=[0, 1]).sum()
 
         # Lecture du tableau des correspondances des produits OTF
         df_corr = pd.read_csv(config["otf"]["chemin_correspondance"],
                               **config["otf"]["read_csv_kwargs"])
 
         # Faire correspondre l'indice avec OTF et calcul du poids
-        index_otf = s_produits.index.map(df_corr["OTF"])
-        s_poids_kg = s_produits.index.map(df_corr["Poids (kg)"])
-        s_poids = s_produits * s_poids_kg
-        s_produits = s_produits.set_axis(index_otf)
-        s_poids = s_poids.set_axis(index_otf)
+        index_otf = df_produits.index.map(df_corr["OTF"])
+        df_produits_otf = df_produits.set_axis(index_otf)[
+            index_otf.notna()]
+        df_poids_kg_otf = df_produits.index.map(
+            df_corr["Poids (kg)"]).to_series().set_axis(
+                index_otf)[index_otf.notna()]
+        df_poids_otf = df_produits_otf.mul(df_poids_kg_otf, axis="index")
 
-        return s_produits, s_poids
+        return df_produits_otf, df_poids_otf
 
 if __name__ == "__main__":
     main()
