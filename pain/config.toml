@@ -22,7 +22,7 @@ gratuit_pour = [ "AnneMa", "AUBRY'S", "Agnès", "Lalo", "Aanor", "Samuel et Sabr
 
 [destination]
 ingredients = [ "Farine T80", "Farine T65", "Farine sarrasin" ]
-quantites_moyennes = [ "Prix moyen", "kg pain / kg farine", "kg farine / kg blé", "kg blé / kg pain" ]
+quantites_moyennes = [ "Taux de perte de pain", "Taux de perte de CA", "Prix moyen", "kg pain / kg farine", "kg farine / kg blé", "kg blé / kg pain" ]
 chemin = "sortie/quantite.csv"
 taux_de_perte = 0.02
 
