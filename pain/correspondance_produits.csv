@@ -1,0 +1,34 @@
+Produit,Variante,OTF,"Poids (kg)"
+Nature,2kg,"Pain nature de 2 kg pièce",2
+Nature,1Kg,"Pain nature de 1 kg pièce",1
+Nature,1kg/M,"Pain nature moulé de 1 kg pièce",1
+Nature,500gr,"Pain nature de 500 g pièce",0.5
+Nature,Baguette,"Baguette nature",0.3
+L/T,2kg,"Pain graines de lin et tournesol de 2 kg pièce",2
+L/T,1Kg,"Pain graines de lin et tournesol de 1 kg pièce",1
+L/T,1kg/M,"Pain graines de lin et tournesol moulé de 1 kg pièce",1
+L/T,500gr,"Pain graines de lin et tournesol de 500 g pièce",0.5
+L/T,Baguette,"Baguette graines de lin et tournesol",0.3
+Chanvre,2kg,"Pain graines de chanvre de 2 kg pièce",2
+Chanvre,1Kg,"Pain graines de chanvre de 1 kg pièce",1
+Chanvre,1kg/M,"Pain graines de chanvre moulé de 1 kg pièce",1
+Chanvre,500gr,"Pain graines de chanvre de 500 g pièce",0.5
+Chanvre,Baguette,"Baguette graines de chanvre",0.3
+Sarrasin,2kg,
+Sarrasin,1kg/M,"Pain sarrasin et blé moulé",1
+Sarrasin,500gr,
+Sarrasin,Baguette,
+B Nature,P,"Brioche nature - moitié",0.25
+B Nature,G,"Brioche nature",0.5
+B Raisin ,P,"Brioche raisin - moitié",0.25
+B Raisin ,G,"Brioche raisin",0.5
+B Sucre,P,
+B Sucre,G,
+B chocolat,P,"Brioche chocolat - moitié",0.25
+B chocolat,G,"Brioche chocolat",0.5
+B chocolat/ sucre,P,"Brioche choco-sucre - moitié",0.25
+B chocolat/ sucre,G,"Brioche choco-sucre",0.5
+Pain de mie,Moulé,"Pain de mie",0.75
+Pain de mie,Burger,"Pain burger",0.12
+Gâche,Ordinaire,"Gâche",0.5
+Gâchette,Ordinaire,"Gachette",0.285

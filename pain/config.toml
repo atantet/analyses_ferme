@@ -1,0 +1,36 @@
+[source]
+"année" = "2025"
+dossier = "../fournées 2025/"
+read_excel_kwargs = { engine = "odf" }
+idx_date = [0, 4]
+feuille_vendredi = "Pain Vendredi"
+feuille_mardi_paire = "Pain Mardi semaines paires"
+feuille_mardi_impaire = "mardi semaines impaires"
+valeur_de_remplissage = 0
+# Indices farines pour Nature + LT, Sarrasin, Chanvre, Levain 1, Levain 2, Levain chef
+"Farine T80" = [ [ 7, 3 ], [ 23, 3 ], [ 33, 3 ], [ 2, 9 ], [ 12, 9 ], [ 42, 6 ] ]
+# Brioche, Gâche + Gachette, Pain de mie + Pain burger
+"Farine T65" = [ [ 16, 7 ],  [ 47, 3 ], [ 54, 3 ] ]
+"Farine sarrasin" = [ [23, 4 ] ]
+"Indices ingredients début" = [ 0, 0 ]
+"Indices ingredients fin" = [ 57, 10 ]
+"Indices produits début" = [ 0, 10 ]
+# "Indices produits fin" = [ 42, 13 ]
+"Indices produits fin" = [ 42, 33 ]
+"Colonnes produits" = [ 0, 1, 2 ]
+gratuit_pour = [ "AnneMa", "AUBRY'S", "Agnès", "Lalo", "Aanor", "Samuel et Sabrina", "Alexis", "Gonzales", "Mathieu", "Seydou", "Jérôme", "Mathieu M" ]
+
+[destination]
+ingredients = [ "Farine T80", "Farine T65", "Farine sarrasin" ]
+chemin = "sortie/quantite.csv"
+
+[otf]
+chemin_correspondance = "correspondance_produits.csv"
+read_csv_kwargs = { "index_col" = [ 0, 1 ] }
+
+[prix]
+chemin = "../../OTF/export/20260420_produits.csv"
+read_csv_kwargs = { "index_col" = 1, "decimal" = "," }
+
+[transformation]
+"kg farine / kg blé" = 0.675
