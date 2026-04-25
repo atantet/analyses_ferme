@@ -74,6 +74,8 @@ def main():
     df_ana['CE / SMIC net'] = (df_fin['Capacité économique'] /
                                df['SMIC_annuel_net'])
 
+    df_ana.to_csv(config["destination"]["chemin"])
+
     fig, ax = plt.subplots(**config["image"]["subplots_kwargs"])
     (df_ana * 100).T.plot.bar(ax=ax)
     ax.set_ylabel('%')
