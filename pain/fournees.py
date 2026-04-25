@@ -5,9 +5,7 @@ import numpy as np
 import pandas as pd
 import tomllib
 
-
 pd.set_option('future.no_silent_downcasting', True)
-
 
 CHEMIN_CONFIG = Path("config.toml")
 COLONNES_PRODUITS = ["Produit", "Variante", "Pain produit"]
@@ -25,16 +23,27 @@ def main():
         [f"{annee}{str(s).zfill(2)}2" for s in semaines[1:]],
         format=format_semaine)
 
+    # Lecture des prix des ingrédients
+    s_prix_ingredients = pd.read_excel(
+        config["prix_ingredients"]["chemin"],
+        **config["prix_ingredients"]["read_excel_kwargs"])[
+            config["prix_ingredients"]["colonne"]].sort_index().groupby(
+                level=0).last()
+
     # Lecture des prix des produits
-    s_prix = pd.read_csv(
-        config["prix"]["chemin"],
-        **config["prix"]["read_csv_kwargs"])["price_private"]
+    s_prix_produits = pd.read_csv(
+        config["prix_produits"]["chemin"],
+        **config["prix_produits"]["read_csv_kwargs"])[
+            config["prix_produits"]["colonne"]]
     
-    # Préparation du tableau des quantités
+    # Préparation du tableau des quantités et des dépenses
+    liste_ingredients = list(config["source"]["indices_ingredients"])
     df_quantite = pd.DataFrame(
-        index=semaines[:-1], columns=config["destination"]["ingredients"],
-        dtype=float)
+        index=semaines[:-1], columns=liste_ingredients, dtype=float)
     df_quantite.index.name = "Semaine"
+    df_depense = pd.DataFrame(
+        index=semaines[:-1], columns=liste_ingredients, dtype=float)
+    df_depense.index.name = "Semaine"
 
     for sem in semaines[:-1]:
         # Identification du fichier à lire
@@ -61,8 +70,9 @@ def main():
             df_mardi, config)
 
         # Aggrégation des quantités d'ingrédients prévues
-        for ingredient in config["destination"]["ingredients"]:
-            lignes, cols = zip(*config["source"][ingredient])
+        for ingredient, indices_ingredients in config["source"][
+                "indices_ingredients"].items():
+            lignes, cols = zip(*indices_ingredients)
             df_quantite.loc[sem, ingredient] = (
                 (df_ingredients_vendredi.to_numpy()[lignes, cols] +
                  df_ingredients_mardi.to_numpy()[lignes, cols])
@@ -79,8 +89,16 @@ def main():
         df_quantite.loc[sem, ["Pain produit", "Pain vendu"]] = (
             df_poids.sum("index"))
         df_quantite.loc[sem, ["CA théorique", "CA réalisé"]] = (
-            df_produits.mul(s_prix, axis="index").sum("index").to_numpy())
+            df_produits.mul(s_prix_produits, axis="index").sum(
+                "index").to_numpy())
 
+    # Dépenses
+    df_depense = df_quantite.mul(df_quantite.columns.to_series().map(
+        s_prix_ingredients), axis="columns")[liste_ingredients]
+    s_depense_totale = df_depense.sum("index")
+    df_depense_totale = s_depense_totale.to_frame("Depense totale")
+
+    # Sauvegarde des quantités
     # Pour ne pas traiter le sarrasin séparément, on le garde en farine
     quantite_farine_de_ble = (df_quantite["Farine T80"] +
                               df_quantite["Farine T65"] + 
@@ -102,24 +120,38 @@ def main():
         df_quantite["kg pain / kg farine"] * 
         df_quantite["kg farine / kg blé"])
 
-    chem_rac = Path(config["destination"]["chemin"])
-    chemin = chem_rac.with_stem(
-        chem_rac.stem + "_" + config["source"]["année"])
-    chemin.parent.mkdir(parents=True, exist_ok=True)
-    df_quantite.to_csv(chemin)
-
     s_quantite_totale = df_quantite.sum("index")
     s_quantite_totale.loc[
         config["destination"]["quantites_moyennes"]] /= len(df_quantite)
     df_quantite_totale = s_quantite_totale.to_frame("Quantité totale")
 
-    chemin_total = chemin.with_stem(chemin.stem + "_totale")
-    df_quantite_totale.to_csv(chemin_total)
+    # Sauvegarde des quantités
+    dossier = Path(config["destination"]["dossier"])
+    chemin_quantite = dossier / Path(
+        "quantite_" + config["source"]["année"] + ".csv")
+    chemin_quantite.parent.mkdir(parents=True, exist_ok=True)
+    df_quantite.to_csv(chemin_quantite)
+    chemin_quantite_total = chemin_quantite.with_stem(
+        chemin_quantite.stem + "_totale")
+    df_quantite_totale.to_csv(chemin_quantite_total)
+
+    dossier = Path(config["destination"]["dossier"])
+    chemin_depense = dossier / Path(
+        "depense_" + config["source"]["année"] + ".csv")
+    chemin_depense.parent.mkdir(parents=True, exist_ok=True)
+    df_depense.to_csv(chemin_depense)
+    chemin_depense_total = chemin_depense.with_stem(
+        chemin_depense.stem + "_totale")
+    df_depense_totale.to_csv(chemin_depense_total)
 
     print("\n")
     print(df_quantite)
     print("\n")
     print(df_quantite_totale)
+    print("\n")
+    print(df_depense)
+    print("\n")
+    print(df_depense_totale)
 
 
 def load_config():

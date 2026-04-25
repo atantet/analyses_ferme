@@ -8,10 +8,7 @@ feuille_mardi_paire = "Pain Mardi semaines paires"
 feuille_mardi_impaire = "mardi semaines impaires"
 valeur_de_remplissage = 0
 # Indices farines pour Nature + LT, Sarrasin, Chanvre, Levain 1, Levain 2, Levain chef
-"Farine T80" = [ [ 7, 3 ], [ 23, 3 ], [ 33, 3 ], [ 2, 9 ], [ 12, 9 ], [ 42, 6 ] ]
-# Brioche, Gâche + Gachette, Pain de mie + Pain burger
-"Farine T65" = [ [ 16, 7 ],  [ 47, 3 ], [ 54, 3 ] ]
-"Farine sarrasin" = [ [23, 4 ] ]
+indices_ingredients = { "Farine T80" = [ [ 7, 3 ], [ 23, 3 ], [ 33, 3 ], [ 2, 9 ], [ 12, 9 ], [ 42, 6 ] ], "Farine T65" = [ [ 16, 7 ],  [ 47, 3 ], [ 54, 3 ] ], "Farine sarrasin" = [ [23, 4 ] ], "Sel" = [ [7, 6 ], [ 16, 2 ], [ 23, 7 ], [33, 6 ], [ 47, 6 ], [ 56, 4 ] ], "Levure" = [ [ 18, 0 ], [ 47, 2 ], [ 54, 6 ] ], "Sucre" = [ [ 16, 3 ], [ 54, 7 ] ], "Graines de lin" = [ [ 7, 8 ] ], "Graines de tournesol" = [ [ 7, 9 ] ], "Graines de chanvre" = [ [ 33, 8 ] ], "Chocolat" = [ [ 18, 7 ] ], "Raisin" = [ [ 18, 6 ] ], "Oeufs" = [ [ 16, 0 ] ], "Lait végétal" = [ [ 16, 6 ], [ 54, 2 ] ], "Huile de colza" = [ [ 16, 4 ], [ 56, 3 ] ], "Huile d'olive" = [ [ 45, 7 ] ] }
 "Indices ingredients début" = [ 0, 0 ]
 "Indices ingredients fin" = [ 57, 10 ]
 "Indices produits début" = [ 0, 10 ]
@@ -21,18 +18,24 @@ valeur_de_remplissage = 0
 gratuit_pour = [ "AnneMa", "AUBRY'S", "Agnès", "Lalo", "Aanor", "Samuel et Sabrina", "Alexis", "Gonzales", "Mathieu", "Seydou", "Jérôme", "Mathieu M" ]
 
 [destination]
-ingredients = [ "Farine T80", "Farine T65", "Farine sarrasin" ]
+# ingredients = [ "Farine T80", "Farine T65", "Farine sarrasin", "Levure", "Sel", "Sucre", "Graines de lin", "Graines de tournesol", "Graines de chanvre", "Chocolat", "Raisin", "Oeufs", "Lait végétal", "Huile de colza", "Huile d'olive" ]
 quantites_moyennes = [ "Taux de perte de pain", "Taux de perte de CA", "Prix moyen", "kg pain / kg farine", "kg farine / kg blé", "kg blé / kg pain" ]
-chemin = "sortie/quantite.csv"
+dossier = "sortie/"
 taux_de_perte = 0.02
 
 [otf]
 chemin_correspondance = "correspondance_produits.csv"
 read_csv_kwargs = { "index_col" = [ 0, 1 ] }
 
-[prix]
+[prix_ingredients]
+chemin = "../../pain/prix_ingredients.ods"
+read_excel_kwargs = { "index_col" = [ 1, 0 ] }
+colonne = "Prix"
+
+[prix_produits]
 chemin = "../../OTF/export/20260420_produits.csv"
 read_csv_kwargs = { "index_col" = 1, "decimal" = "," }
+colonne = "price_private"
 
 [transformation]
 "kg farine / kg blé" = 0.675
