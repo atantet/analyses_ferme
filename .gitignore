@@ -1,8 +1,13 @@
-# data
+# Entrées-sorties
+**/entree
 **/sortie
+**/image
 
 # emacs
 *~
+.#*
+#*#
+.idea
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

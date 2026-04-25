@@ -1,6 +1,6 @@
 [source]
 "année" = "2025"
-dossier = "../fournées 2025/"
+dossier = "../../pain/fournées 2025/"
 read_excel_kwargs = { engine = "odf" }
 idx_date = [0, 4]
 feuille_vendredi = "Pain Vendredi"

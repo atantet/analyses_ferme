@@ -1,0 +1,16 @@
+[source]
+chemin = "../../gestion/releves_de_compte/synthese_releves_de_compte.ods"
+read_excel_kwargs = { parse_dates = ["Date"], decimal = ",", index_col = "Date" }
+colonne_debit = "Total débit (€)"
+colonne_credit = "Total crédit (€)"
+colonne_situation = "Nouvelle situation (€)"
+
+[destination]
+chemin = "sortie/releves_de_compte/serie_releves_de_compte.csv"
+
+[image]
+figsize = [ 12, 8 ]
+chemin = "image/releves_de_compte/balance_comptes.png"
+kwargs = { "bbox_inches" = "tight", "dpi" = 300 }
+couleur_positif = "#009E73"
+couleur_negatif = "#D55E00"

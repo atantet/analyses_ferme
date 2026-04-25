@@ -1,0 +1,20 @@
+[source]
+chemin = "entree/resultat/serie_resultat.csv"
+read_csv_kwargs = { "header" = 0, "index_col" = 0 }
+
+[destination]
+chemin = "sortie/resultat/serie_resultat_analyse.csv"
+marge_achat_revente = 0.3
+heures_par_an_salarie = 1607
+forfait_investissements = 0.25
+etp_associe = 2
+
+[image]
+kwargs = { "bbox_inches" = "tight", "dpi" = 300 }
+subplots_kwargs = { figsize = [ 16, 12 ], constrained_layout = true }
+chemin_resultat = "image/resultat/serie_resultat.png"
+chemin_financement = "image/resultat/serie_financement.png"
+chemin_analyse = "image/resultat/serie_analyse.png"
+chemin_mb = "image/resultat/serie_mb.png"
+chemin_pm = "image/resultat/serie_pm.png"
+savefig_kwargs = { bbox_inches = "tight" }

@@ -1,0 +1,15 @@
+[source]
+chemin = "entree/bilan/serie_bilan.csv"
+read_csv_kwargs = { "header" = 0, "index_col" = 0 }
+
+[destination]
+chemin = "sortie/bilan/serie_bilan_analyse.csv"
+
+[image]
+figsize_large = [16, 12]
+kwargs = { "bbox_inches" = "tight", "dpi" = 300 }
+chemin = "image/bilan/serie_bilan.png"
+chemin_capital = "image/bilan/serie_bilan_capital.png"
+chemin_tn = "image/bilan/serie_bilan_tn.png"
+chemin_taux = "image/bilan/serie_bilan_taux.png"
+chemin_tng = "image/bilan/serie_bilan_tng.png"
