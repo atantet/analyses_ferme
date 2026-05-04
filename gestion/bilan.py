@@ -113,7 +113,9 @@ def main():
 
     plt.show(block=False)
 
-    df_ana.to_csv(config["destination"]["chemin"])
+    chemin = Path(config["destination"]["chemin"])
+    chemin.parent.mkdir(parents=True, exist_ok=True)
+    df_ana.to_csv(chemin)
 
     return
 

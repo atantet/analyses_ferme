@@ -21,6 +21,11 @@ def main():
         config["source"]["chemin"], **config["source"]["read_excel_kwargs"]
     ).sort_index()
 
+    chemin = Path(config["destination"]["chemin"])
+    chemin.parent.mkdir(parents=True, exist_ok=True)
+    df.to_csv(chemin)
+
+
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=config["image"]["figsize"],
                                    sharex=True)
 

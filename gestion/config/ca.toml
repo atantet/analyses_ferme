@@ -4,11 +4,14 @@ racine = "../../gestion/"
 chemin = "entree/bilan/serie_ca.csv"
 read_excel_kwargs = { "header" = 0 }
 colonne_ca = [ 'Recettes /marché' ]
+colonne_amap = " chèques factures et amap"
+colonne_pro = "virements factures"
 
 [debouche]
 jour = { "Marché bio de Dol" = 2, "Pain au marché bio de Dol" = 2, "Marché de Pontorson" = 3, "Marché du jeudi à Rocabey" = 4, "Vente à la ferme" = 5, "Marché du samedi à Rocabey" = 6 }
 demi = [ "Marché bio de Dol", "Pain au marché bio de Dol" ]
 parite_marche_bio = 1
+TVA = 0.055
 
 [organisation_travail]
 dossier = "../../../Installation/dossier_dja/organisation_travail"
